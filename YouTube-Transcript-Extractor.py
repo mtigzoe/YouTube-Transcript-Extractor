@@ -1,6 +1,8 @@
+#Extract the transcript from YouTube video and save it to the text file.
 from langchain_community.document_loaders import YoutubeLoader
 from langchain_community.docstore.document import Document
 import textwrap
+
 
 url = input("Paste your YouTube url: ")
 loader = YoutubeLoader.from_youtube_url(
@@ -25,3 +27,14 @@ for doc in docs:
         file.write(str(document.metadata["author"]) + "\n")        
         file.write("\n")
         file.write(str(wrapped_text))
+
+#Copy the text file and save it to Word document. 
+from docx import Document 
+
+with open(filename + ".txt", "r", encoding="utf-8") as txt_file:
+    text_content = txt_file.read()
+
+document = Document()
+document.add_paragraph(text_content)
+
+document.save(filename + ".docx")
