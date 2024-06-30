@@ -2,7 +2,7 @@
 from langchain_community.document_loaders import YoutubeLoader
 from langchain_community.docstore.document import Document
 import textwrap
-
+import string 
 
 url = input("Paste your YouTube url: ")
 loader = YoutubeLoader.from_youtube_url(
@@ -18,7 +18,10 @@ for doc in docs:
         )
     del document.metadata['source']
     
-    filename = document.metadata['title'].replace(' ', '_')
+    filename = document.metadata['title']
+    exclude = set(string.punctuation)
+    filename = "".join(ch for ch in filename if ch not in exclude)
+
     wrapped_text = textwrap.fill(document.page_content, width=80) 
 
     with open(filename + ".txt", "w", encoding="utf-8") as file:
