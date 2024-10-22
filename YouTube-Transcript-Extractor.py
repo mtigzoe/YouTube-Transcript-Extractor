@@ -3,41 +3,41 @@ from langchain_community.document_loaders import YoutubeLoader
 from langchain_community.docstore.document import Document
 import textwrap
 import string 
+from pathlib import Path 
+from urllib.request import urlopen
+from bs4 import BeautifulSoup 
 
 url = input("Paste your YouTube url: ")
+
+soup = BeautifulSoup(urlopen(url), features="lxml")
+    
+webpage_title = soup.title.get_text()    
+webpage_title = webpage_title.replace(" - YouTube", "")    
+    
+exclude = set(string.punctuation)
+filename_title = "".join(ch for ch in webpage_title if ch not in exclude)
+
 loader = YoutubeLoader.from_youtube_url(
-    url, 
-    add_video_info=True 
+    url    
 )
 docs = loader.load()
-for doc in docs: 
-    
+for doc in docs:     
     document = Document(
-        page_content = doc.page_content,
-        metadata = doc.metadata 
+        page_content = doc.page_content        
         )
-    del document.metadata['source']
+        
+    content_text = textwrap.fill(document.page_content, width=80) 
+
+    full_content = filename_title + "\n" \
+        + content_text    
     
-    filename = document.metadata['title']
-    exclude = set(string.punctuation)
-    filename = "".join(ch for ch in filename if ch not in exclude)
+    path_filename_tile = Path(filename_title + ".txt")
+    
+    path_filename_tile.write_text(full_content)
 
-    wrapped_text = textwrap.fill(document.page_content, width=80) 
+read_content = path_filename_tile.read_text()
 
-    with open(filename + ".txt", "w", encoding="utf-8") as file:
-
-        file.write(str(document.metadata["title"]) + "\n")
-        file.write(str(document.metadata["author"]) + "\n")        
-        file.write("\n")
-        file.write(str(wrapped_text))
-
-#Copy the text file and save it to Word document. 
 from docx import Document 
-
-with open(filename + ".txt", "r", encoding="utf-8") as txt_file:
-    text_content = txt_file.read()
-
 document = Document()
-document.add_paragraph(text_content)
-
-document.save(filename + ".docx")
+document.add_paragraph(read_content)
+document.save(filename_title + ".docx")
