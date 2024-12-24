@@ -33,7 +33,7 @@ for doc in docs:
     
     path_filename_tile = Path(filename_title + ".txt")
     
-    path_filename_tile.write_text(full_content)
+    path_filename_tile.write_text(full_content, encoding='utf-8')
 
 read_content = path_filename_tile.read_text()
 
