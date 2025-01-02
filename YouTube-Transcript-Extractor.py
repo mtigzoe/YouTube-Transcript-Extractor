@@ -6,6 +6,7 @@ import string
 from pathlib import Path 
 from urllib.request import urlopen
 from bs4 import BeautifulSoup 
+import docx as dx
 
 url = input("Paste your YouTube url: ")
 
@@ -21,23 +22,20 @@ loader = YoutubeLoader.from_youtube_url(
     url    
 )
 docs = loader.load()
-for doc in docs:     
+for doc in docs:  
     document = Document(
         page_content = doc.page_content        
-        )
+    )
         
     content_text = textwrap.fill(document.page_content, width=80) 
 
     full_content = filename_title + "\n" \
         + content_text    
     
-    path_filename_tile = Path(filename_title + ".txt")
+    path_filename_title = Path(filename_title + ".txt")    
     
-    path_filename_tile.write_text(full_content, encoding='utf-8')
-
-read_content = path_filename_tile.read_text()
-
-from docx import Document 
-document = Document()
-document.add_paragraph(read_content)
-document.save(filename_title + ".docx")
+    path_filename_title.write_text(full_content, encoding='utf-8')
+    
+    document = dx.Document()
+    document.add_paragraph(path_filename_title.read_text(encoding='utf-8'))
+    document.save(filename_title + ".docx")
